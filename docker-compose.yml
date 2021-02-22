@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  nest:
+    container_name: 'nest'
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      # - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+    command: npm run start:debug
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: 'nest_mongo'
+    volumes:
+      - mongodb_data_container:/data/db
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DATEBASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+networks:
+  webnet:
+volumes:
+  mongodb_data_container:
